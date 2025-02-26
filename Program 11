@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the structure of the Symbol Table entry
+typedef struct Symbol {
+    char name[50]; // name of the symbol (e.g., variable, function)
+    int value;     // value associated with the symbol (for example, the value of a variable)
+    struct Symbol *next; // pointer to the next symbol in the table
+} Symbol;
+
+// Function to create a new symbol table entry
+Symbol* createSymbol(char* name, int value) {
+    Symbol* newSymbol = (Symbol*)malloc(sizeof(Symbol));
+    strcpy(newSymbol->name, name);
+    newSymbol->value = value;
+    newSymbol->next = NULL;
+    return newSymbol;
+}
+
+// Function to insert a new symbol into the symbol table
+void insertSymbol(Symbol** table, char* name, int value) {
+    Symbol* newSymbol = createSymbol(name, value);
+    newSymbol->next = *table;
+    *table = newSymbol;
+}
+
+// Function to look up a symbol in the symbol table
+Symbol* lookupSymbol(Symbol* table, char* name) {
+    Symbol* temp = table;
+    while (temp != NULL) {
+        if (strcmp(temp->name, name) == 0) {
+            return temp; // Symbol found
+        }
+        temp = temp->next;
+    }
+    return NULL; // Symbol not found
+}
+
+// Function to display the symbol table
+void displaySymbolTable(Symbol* table) {
+    if (table == NULL) {
+        printf("Symbol Table is empty.\n");
+        return;
+    }
+    printf("Symbol Table:\n");
+    printf("Name\t\tValue\n");
+    printf("-----------------------\n");
+    Symbol* temp = table;
+    while (temp != NULL) {
+        printf("%s\t\t%d\n", temp->name, temp->value);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    Symbol* symbolTable = NULL; // Initialize an empty symbol table
+    int choice, value;
+    char name[50];
+
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1. Insert Symbol\n");
+        printf("2. Lookup Symbol\n");
+        printf("3. Display Symbol Table\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: // Insert symbol
+                printf("Enter symbol name: ");
+                scanf("%s", name);
+                printf("Enter symbol value: ");
+                scanf("%d", &value);
+                insertSymbol(&symbolTable, name, value);
+                printf("Symbol inserted.\n");
+                break;
+
+            case 2: // Lookup symbol
+                printf("Enter symbol name to lookup: ");
+                scanf("%s", name);
+                Symbol* result = lookupSymbol(symbolTable, name);
+                if (result != NULL) {
+                    printf("Symbol found: Name = %s, Value = %d\n", result->name, result->value);
+                } else {
+                    printf("Symbol not found.\n");
+                }
+                break;
+
+            case 3: // Display symbol table
+                displaySymbolTable(symbolTable);
+                break;
+
+            case 4: // Exit
+                printf("Exiting the program.\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
