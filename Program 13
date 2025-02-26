@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Global variables
+char *input;   // Pointer to input string
+int position = 0; // Current position in input string
+
+// Function to check and move to the next character
+char nextChar() {
+    return input[position];
+}
+
+// Function to move to the next character
+void advance() {
+    position++;
+}
+
+// Function for S -> aSb | ε (recursive descent)
+int S() {
+    if (nextChar() == 'a') {
+        advance();     // consume 'a'
+        if (S() == 0)  // recursive call to S
+            return 0;  // If S fails, return failure
+        if (nextChar() == 'b') {
+            advance(); // consume 'b'
+            return 1;  // Successfully matched "aSb"
+        }
+        return 0; // If no 'b' is found, return failure
+    }
+    // ε production: if we reach here, it means ε is a valid production (empty string)
+    return 1;
+}
+
+// Function to start the parsing process
+int parse(char *expression) {
+    input = expression;  // Set the input string
+    position = 0;         // Reset the position
+
+    if (S() == 1 && nextChar() == '\0') {
+        // If the entire string matches and no characters are left
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int main() {
+    char expression[100];
+
+    // Accept the input expression from the user
+    printf("Enter an expression to parse: ");
+    fgets(expression, sizeof(expression), stdin);
+
+    // Remove trailing newline character from fgets
+    size_t len = strlen(expression);
+    if (len > 0 && expression[len - 1] == '\n') {
+        expression[len - 1] = '\0';
+    }
+
+    // Start the parsing
+    if (parse(expression)) {
+        printf("The input string satisfies the grammar!\n");
+    } else {
+        printf("The input string does not satisfy the grammar.\n");
+    }
+
+    return 0;
+}
