@@ -1,0 +1,16 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+[aeiouAEIOU]    { count++; }
+.               { /* ignore other characters */ }
+
+%%
+
+int main(int argc, char **argv) {
+    FILE *input;
+    yylex();
+    printf("Number of vowels: %d\n", count);
+    return 0;
+}

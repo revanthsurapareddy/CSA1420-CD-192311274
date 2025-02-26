@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+
+char *grammar[MAX];
+int numProductions;
+
+void computeLeading() {
+    char leading[MAX][MAX];
+    for (int i = 0; i < numProductions; i++) {
+        char *production = grammar[i];
+        char lhs = production[0];
+        char rhs[MAX];
+        strcpy(rhs, production + 3); // Skip "->"
+        
+        for (int j = 0; rhs[j] != '\0'; j++) {
+            if (rhs[j] >= 'A' && rhs[j] <= 'Z') {
+                // Non-terminal
+                for (int k = 0; k < numProductions; k++) {
+                    if (grammar[k][0] == rhs[j]) {
+                        strcat(leading[i], grammar[k] + 3); // Append right-hand side
+                        break;
+                    }
+                }
+            } else {
+                // Terminal
+                strncat(leading[i], &rhs[j], 1);
+                break;
+            }
+        }
+    }
+
+    printf("Leading sets:\n");
+    for (int i = 0; i < numProductions; i++) {
+        printf("Leading(%c) = { %s }\n", grammar[i][0], leading[i]);
+    }
+}
+
+int main() {
+    printf("Enter number of productions: ");
+    scanf("%d", &numProductions);
+    getchar(); // Consume newline
+
+    for (int i = 0; i < numProductions; i++) {
+        printf("Enter production %d: ", i + 1);
+        fgets(grammar[i], MAX, stdin);
+        grammar[i][strcspn(grammar[i], "\n")] = 0; // Remove newline
+    }
+
+    computeLeading();
+    return 0;
+}

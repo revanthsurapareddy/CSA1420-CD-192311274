@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_STACK_SIZE 50
+#define MAX_INPUT_SIZE 50
+
+// Stack to simulate the parsing process
+char stack[MAX_STACK_SIZE];
+int top = -1;
+
+// Function to push a symbol onto the stack
+void push(char symbol) {
+    if (top < MAX_STACK_SIZE - 1) {
+        stack[++top] = symbol;
+    } else {
+        printf("Error: Stack overflow.\n");
+        exit(1);
+    }
+}
+
+// Function to pop a symbol from the stack
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    } else {
+        printf("Error: Stack underflow.\n");
+        exit(1);
+    }
+}
+
+// Function to display the current stack
+void displayStack() {
+    printf("Stack: ");
+    for (int i = 0; i <= top; i++) {
+        printf("%c ", stack[i]);
+    }
+    printf("\n");
+}
+
+// Shift-Reduce Parsing function
+void shiftReduceParse(char* input) {
+    int inputIndex = 0; // To track the current position in input
+
+    // Begin parsing
+    while (input[inputIndex] != '\0' || top > -1) {
+        // Shift operation: move a symbol from the input to the stack
+        if (input[inputIndex] != '\0') {
+            push(input[inputIndex]);
+            printf("Shift: ");
+            displayStack();
+            inputIndex++;
+        }
+
+        // Reduce operation: try to apply a production
+        if (top >= 1) {
+            if (stack[top] == 'b' && stack[top - 1] == 'a') {
+                // Reduce A -> a and B -> b to S -> AB
+                pop();  // pop 'b'
+                pop();  // pop 'a'
+                push('S');  // push 'S'
+                printf("Reduce: A -> a, B -> b => S -> AB\n");
+                displayStack();
+            }
+        }
+
+        // Check if the entire input has been parsed
+        if (input[inputIndex] == '\0' && top == 0 && stack[top] == 'S') {
+            printf("Input successfully parsed.\n");
+            return;
+        }
+    }
+
+    // If the parsing is unsuccessful
+    printf("Error: Unable to parse the input.\n");
+}
+
+int main() {
+    char input[MAX_INPUT_SIZE];
+
+    // Read input expression
+    printf("Enter the input string (using 'a' and 'b' only): ");
+    fgets(input, sizeof(input), stdin);
+
+    // Remove newline character if present
+    size_t len = strlen(input);
+    if (len > 0 && input[len - 1] == '\n') {
+        input[len - 1] = '\0';
+    }
+
+    // Perform shift-reduce parsing
+    shiftReduceParse(input);
+
+    return 0;
+}

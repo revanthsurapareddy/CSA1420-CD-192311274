@@ -1,0 +1,44 @@
+# Compiler Backend Implementation
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SYMBOLS 100
+
+typedef struct {
+    char name[50];
+    int type; // 0: int, 1: float, 2: char
+    int scope;
+} Symbol;
+
+Symbol symbolTable[MAX_SYMBOLS];
+int symbolCount = 0;
+
+void addSymbol(char *name, int type, int scope) {
+    if (symbolCount < MAX_SYMBOLS) {
+        strcpy(symbolTable[symbolCount].name, name);
+        symbolTable[symbolCount].type = type;
+        symbolTable[symbolCount].scope = scope;
+        symbolCount++;
+    } else {
+        printf("Symbol table is full.\n");
+    }
+}
+
+void printSymbolTable() {
+    printf("Symbol Table:\n");
+    for (int i = 0; i < symbolCount; i++) {
+        printf("Name: %s, Type: %d, Scope: %d\n", symbolTable[i].name, symbolTable[i].type, symbolTable[i].scope);
+    }
+}
+
+int main() {
+    addSymbol("var1", 0, 1);
+    addSymbol("var2", 1, 1);
+    addSymbol("var3", 2, 2);
+    
+    printSymbolTable();
+    
+    return 0;
+}

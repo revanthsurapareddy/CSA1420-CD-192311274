@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+
+char stack[MAX];
+int top = -1;
+
+void push(char c) {
+    if (top < MAX - 1) {
+        stack[++top] = c;
+    }
+}
+
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    }
+    return '\0';
+}
+
+int isEmpty() {
+    return top == -1;
+}
+
+int precedence(char c) {
+    switch (c) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        case '^':
+            return 3;
+        default:
+            return 0;
+    }
+}
+
+void trailingOperatorParser(char *input) {
+    char *token = strtok(input, " ");
+    while (token != NULL) {
+        if (isalnum(token[0])) {
+            printf("Operand: %s\n", token);
+        } else {
+            while (!isEmpty() && precedence(stack[top]) >= precedence(token[0])) {
+                printf("Operator: %c\n", pop());
+            }
+            push(token[0]);
+        }
+        token = strtok(NULL, " ");
+    }
+    while (!isEmpty()) {
+        printf("Operator: %c\n", pop());
+    }
+}
+
+int main() {
+    char input[MAX];
+    printf("Enter the expression: ");
+    fgets(input, MAX, stdin);
+    input[strcspn(input, "\n")] = 0; // Remove newline character
+    trailingOperatorParser(input);
+    return 0;
+}

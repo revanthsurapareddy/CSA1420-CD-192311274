@@ -1,0 +1,15 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+
+[A-Z]+   { printf("Capital Word: %s\n", yytext); }
+
+.|\n     { /* Ignore any other characters */ }
+
+%%
+
+int main() {
+    printf("Enter text to identify capital words:\n");
+    yylex();  // Start the
